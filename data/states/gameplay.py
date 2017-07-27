@@ -1,7 +1,7 @@
 import pygame as pg
 
 from .. import tools, prepare
-from ..components.level import GalleryLevel, TARGETS
+from ..components.level import GalleryLevel
 from ..components.curtain import Curtains
 from ..components.hud import HUD
 
