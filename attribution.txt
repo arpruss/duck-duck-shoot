@@ -1,0 +1,60 @@
+LICENSES
+
+CC-BY 3.0
+CC-0
+
+
+GRAPHICS
+
+All graphics from Shooting Gallery Pack by Kenney are licensed CC-0
+
+
+MUSIC
+
+roll_up.ogg
+Source: https://opengameart.org/content/roll-up 
+Creator: Yubatake https://opengameart.org/users/yubatake
+License: CC-BY 3.0
+
+
+SOUNDS
+
+switch24 and switch25 from kenney ui-audio
+
+
+gun-fire
+Source: https://freesound.org/people/DLTBGYD/sounds/325157/
+Creator: https://freesound.org/people/DLTBGYD/
+License: CC0
+
+bb-hit2
+Source: https://freesound.org/people/CGEffex/sounds/89510/
+Creator: CGEffex https://freesound.org/people/CGEffex/
+License: CC-BY 3.0
+
+bullet-impact_wood2
+Source: https://freesound.org/people/NoiseCollector/sounds/237447/
+Creator: https://freesound.org/people/NoiseCollector/
+License: CC-BY 3.0
+
+outofammo
+Source: https://opengameart.org/content/2-metal-weapon-clicks
+Creator: Michael Baradari http://apollo-music.de/
+License: CC-BY 3.0
+
+weapload
+Source: https://opengameart.org/content/2-metal-weapon-clicks
+Creator: Michael Baradari http://apollo-music.de/
+License: CC-BY 3.0
+
+Source:
+Creator:
+License:
+
+Source:
+Creator:
+License:
+
+Source:
+Creator:
+License:
