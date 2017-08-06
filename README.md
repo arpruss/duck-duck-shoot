@@ -1,4 +1,4 @@
-#Duck, Duck, Shoot
+# Duck, Duck, Shoot
 
 Shooting Gallery game for [r/pygame challenge](https://www.reddit.com/r/pygame/comments/6mpdbh/challenge_shooting_gallery/)
 
