@@ -4,7 +4,8 @@ from .. import prepare
 
 
 class ScrollingBackground(pg.sprite.DirtySprite):
-    def __init__(self, image, bottomleft, width, speed, bob_amount, bob_speed, *groups):
+    def __init__(self, image, bottomleft, width, speed,
+                      bob_amount, bob_speed, *groups):
         super(ScrollingBackground, self).__init__(*groups)
         w, h = image.get_size()
         self.scroll_width = w
@@ -27,8 +28,7 @@ class ScrollingBackground(pg.sprite.DirtySprite):
         self.bob_direction = 1
         self.initial_top = self.rect.top
         self.update(0)
-        
-    
+
     def update(self, dt):
         self.scroll_offset += self.speed * dt
         self.view_rect.left -= int(self.scroll_offset)
@@ -45,6 +45,6 @@ class ScrollingBackground(pg.sprite.DirtySprite):
                 self.bob_direction *= -1
             elif self.rect.top <= self.initial_top - self.bob_amount:
                 self.bob_direction *= -1
-        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)

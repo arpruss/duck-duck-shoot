@@ -26,6 +26,7 @@ class Control(object):
         self.state_name = None
         self.state = None
         self.fullscreen = False
+        self.grab_focus = True
 
     def setup_states(self, state_dict, start_state):
         """Given a dictionary of States and a State to start in,
@@ -67,6 +68,9 @@ class Control(object):
             elif event.type == pg.KEYUP:
                 self.keys = pg.key.get_pressed()
                 self.toggle_fullscreen(event.key)
+                if event.key == pg.K_g:
+                    self.grab_focus = not self.grab_focus
+                    pg.event.set_grab(self.grab_focus)
             self.state.get_event(event)
 
     def toggle_show_fps(self, key):
@@ -135,7 +139,7 @@ class _State(object):
 
     def draw(self, surface):
         pass
-        
+
     def render_font(self, font, msg, color, center):
         """Returns the rendered font surface and its rect centered on center."""
         msg = font.render(msg, 1, color)
@@ -305,8 +309,8 @@ def color_swap(source_image, swap_map):
                                recolor, 1, color_surf, True)
         final.blit(surf, (0,0))
     return final
-    
-    
+
+
 def lerp(color_1, color_2, lerp_val):
     """
     Return a new color that is a linear interpolation of the two

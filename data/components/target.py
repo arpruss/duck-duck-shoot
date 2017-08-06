@@ -27,13 +27,15 @@ class BrokenTarget(pg.sprite.DirtySprite):
         move = self.speed * dt
         self.pos = self.pos[0], self.pos[1] + move
         self.rect.center = self.pos
-        if self.rect.centery > self.fall_limit:
+        if self.rect.centery >= self.fall_limit:
             self.kill()
 
 
 
 class Target(pg.sprite.DirtySprite):
-    def __init__(self, target_type, target_image, stick_image, broken_stick_image, stick_anchor, scroll_speed, layer, *groups):
+    def __init__(self, target_type, target_image, stick_image,
+                      broken_stick_image, stick_anchor,
+                      scroll_speed, layer, *groups):
         super(Target, self).__init__(*groups)
         self.target_type = target_type
         self.broken_stick = broken_stick_image
@@ -57,9 +59,6 @@ class Target(pg.sprite.DirtySprite):
         self.bob_time = 750
         self.animations = pg.sprite.Group()
         self.done = False
-
-
-        self.b = None
 
     def make_base_image(self, target_image, stick_image, broken_stick_image):
         tw, th = target_image.get_size()
@@ -88,20 +87,23 @@ class Target(pg.sprite.DirtySprite):
         self.angle += amount * self.rotation_direction
         if (self.angle < .1 * pi) or (self.angle > .9 * pi):
             self.rotation_direction *= -1
-        self.image = pg.transform.rotate(self.base_image, degrees(self.angle - self.start_angle))
+        self.image = pg.transform.rotate(
+                    self.base_image, degrees(self.angle - self.start_angle))
         self.target_mask = pg.mask.from_surface(self.image, 0)
         self.rect = self.image.get_rect(center=self.get_anchor())
 
     def ascend(self):
         new_y = self.original_anchor[1] - self.bob_amount
-        ani = Animation(stick_anchor_y=new_y, duration=self.bob_time, round_values=True)
+        ani = Animation(stick_anchor_y=new_y,
+                               duration=self.bob_time, round_values=True)
         ani.start(self)
         ani.callback = self.descend
         self.animations.add(ani)
 
     def descend(self):
         new_y = self.original_anchor[1] + self.bob_amount
-        ani = Animation(stick_anchor_y=new_y, duration=self.bob_time, round_values=True)
+        ani = Animation(stick_anchor_y=new_y,
+                               duration=self.bob_time, round_values=True)
         ani.start(self)
         ani.callback = self.ascend
         self.animations.add(ani)
@@ -110,7 +112,8 @@ class Target(pg.sprite.DirtySprite):
         prepare.SFX["bb-hit2"].play()
         self.done  = True
         self.base_image = self.broken_base_image
-        rot_target = pg.transform.rotate(self.target_image, degrees(self.angle - self.start_angle))
+        rot_target = pg.transform.rotate(
+                    self.target_image, degrees(self.angle - self.start_angle))
         BrokenTarget(rot_target, self.get_anchor(), self.layer - 1, all_sprites)
         self.rotate(0)
 
@@ -121,11 +124,10 @@ class Target(pg.sprite.DirtySprite):
         self.animations.update(dt)
         self.scroll(dt)
         self.rect.center = self.get_anchor()
-        self.target_rect.center = project(self.get_anchor(), self.angle, self.stick_length)
+        self.target_rect.center = project(self.get_anchor(),
+                                                     self.angle, self.stick_length)
         if self.stick_anchor_x > prepare.SCREEN_SIZE[0] + 100:
             self.kill()
-        if self.b is not None:
-            print self.b.rect.center
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
@@ -134,7 +136,9 @@ class Target(pg.sprite.DirtySprite):
 class YellowDuck(Target):
     def __init__(self, stick_anchor, layer, *groups):
         super(YellowDuck, self).__init__("duck", prepare.GFX["duck_yellow"],
-                prepare.GFX["stick_wood"], prepare.GFX["stick_wood_broken"], stick_anchor, .15, layer, *groups)
+                                                     prepare.GFX["stick_wood"],
+                                                     prepare.GFX["stick_wood_broken"],
+                                                     stick_anchor, .15, layer, *groups)
 
     def update(self, dt):
         self.rotate(.001 * dt)
@@ -144,13 +148,17 @@ class YellowDuck(Target):
 class FastYellowDuck(Target):
     def __init__(self, stick_anchor, layer, *groups):
         super(FastYellowDuck, self).__init__("duck", prepare.GFX["duck_yellow"],
-                prepare.GFX["stick_wood"], prepare.GFX["stick_wood_broken"], stick_anchor, .35, layer, *groups)
+                                                           prepare.GFX["stick_wood"],
+                                                           prepare.GFX["stick_wood_broken"],
+                                                           stick_anchor, .3, layer, *groups)
 
 
 class BobbingBullseye(Target):
     def __init__(self, stick_anchor, layer, *groups):
         super(BobbingBullseye, self).__init__("bullseye", prepare.GFX["target_red2"],
-                prepare.GFX["stick_metal"], prepare.GFX["stick_metal_broken"], stick_anchor, .35, layer, *groups)
+                                                            prepare.GFX["stick_metal"],
+                                                            prepare.GFX["stick_metal_broken"],
+                                                            stick_anchor, .35, layer, *groups)
         self.animations = pg.sprite.Group()
         self.ascend()
 
@@ -158,10 +166,14 @@ class BobbingBullseye(Target):
 class ColoredBullseye(Target):
     def __init__(self, stick_anchor, layer, *groups):
         super(ColoredBullseye, self).__init__("colored bullseye", prepare.GFX["target_colored"],
-                prepare.GFX["stick_metal"], prepare.GFX["stick_metal_broken"], stick_anchor, .5, layer, *groups)
+                                                           prepare.GFX["stick_metal"],
+                                                           prepare.GFX["stick_metal_broken"],
+                                                           stick_anchor, .5, layer, *groups)
 
 
 class OrangeDuck(Target):
     def __init__(self, stick_anchor,  layer, *groups):
         super(OrangeDuck, self).__init__("orange duck", prepare.GFX["duck_l'orange"],
-                prepare.GFX["stick_wood"], prepare.GFX["stick_wood_broken"], stick_anchor, .6, layer, *groups)
+                                                      prepare.GFX["stick_wood"],
+                                                      prepare.GFX["stick_wood_broken"],
+                                                      stick_anchor, .6, layer, *groups)

@@ -46,14 +46,15 @@ class Curtains(object):
             num += 1
         right, bottom = midbottom
         for x in range(num):
-            c = CurtainPanel((right - (curtain_w * (x + 1)), bottom), self.left_panels, self.panels, *groups)
+            c = CurtainPanel((right - (curtain_w * (x + 1)), bottom),
+                                   self.left_panels, self.panels, *groups)
         left, bottom = midbottom
         for y in range(num):
-            CurtainPanel((left + (y * curtain_w), bottom), self.right_panels, self.panels, *groups)
+            CurtainPanel((left + (y * curtain_w), bottom),
+                              self.right_panels, self.panels, *groups)
         self.scroll_amount = midbottom[0] - side_margin
         self.scroll_time = 3000
         self.animations = pg.sprite.Group()
-
         valence = prepare.GFX["curtain_straight"]
         vw, vh = valence.get_size()
         self.valence = pg.Surface((screen_size[0], vh)).convert_alpha()
@@ -68,7 +69,8 @@ class Curtains(object):
     def open(self):
         for left_p in self.left_panels:
             new_x = left_p.rect.x - self.scroll_amount
-            ani = Animation(x=new_x, duration=self.scroll_time, round_values=True)
+            ani = Animation(x=new_x, duration=self.scroll_time,
+                                  round_values=True)
             ani.start(left_p.rect)
             self.animations.add(ani)
 
@@ -80,18 +82,14 @@ class Curtains(object):
 
     def close(self):
         for p in self.panels:
-            ani = Animation(x=p.original_topleft[0], duration=self.scroll_time, round_values=True)
+            ani = Animation(x=p.original_topleft[0], duration=self.scroll_time,
+                                  round_values=True)
             ani.start(p.rect)
             self.animations.add(ani)
 
     def update(self, dt):
         self.animations.update(dt)
 
-
     def draw(self, surface):
         self.panels.draw(surface)
         surface.blit(self.valence, (0, 0))
-
-
-
-

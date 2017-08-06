@@ -1,12 +1,26 @@
 LICENSES
 
-CC-BY 3.0
-CC-0
+CC-BY 3.0       https://creativecommons.org/licenses/by/3.0/legalcode
+CC0              https://creativecommons.org/publicdomain/zero/1.0/legalcode
 
+Code is licensed CC0.
 
-GRAPHICS
+GRAPHICS 
 
-All graphics from Shooting Gallery Pack by Kenney are licensed CC-0
+play and replay buttons
+Source: https://opengameart.org/content/cartoon-mobile-rounded-icon-buttons
+Creator: Nathan Lovato http://gdquest.com/
+License: CC0
+
+mouse and key icons
+Source: https://opengameart.org/content/free-keyboard-and-controllers-prompts-pack
+Creator: Nicolae Berbece https://opengameart.org/users/xelu 
+License: CC0
+
+Shooting Gallery assets (ducks, targets, backgrounds, etc.)
+Source: http://kenney.nl/assets/shooting-gallery
+Creator: Kenney http://kenney.nl/
+License: CC0
 
 
 MUSIC
@@ -21,8 +35,7 @@ SOUNDS
 
 switch24 and switch25 from kenney ui-audio
 
-
-gun-fire
+fire
 Source: https://freesound.org/people/DLTBGYD/sounds/325157/
 Creator: https://freesound.org/people/DLTBGYD/
 License: CC0
@@ -42,19 +55,12 @@ Source: https://opengameart.org/content/2-metal-weapon-clicks
 Creator: Michael Baradari http://apollo-music.de/
 License: CC-BY 3.0
 
-weapload
+load
 Source: https://opengameart.org/content/2-metal-weapon-clicks
 Creator: Michael Baradari http://apollo-music.de/
 License: CC-BY 3.0
 
-Source:
-Creator:
-License:
-
-Source:
-Creator:
-License:
-
-Source:
-Creator:
-License:
+switch24
+Source: http://kenney.nl/assets/ui-audio
+Creator: Kenney http://kenney.nl/
+License: CC0

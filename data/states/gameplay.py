@@ -14,14 +14,14 @@ class Gameplay(tools._State):
 
     def make_level(self):
         self.level = GalleryLevel(self.crosshair, self.player)
-        self.curtains = Curtains(prepare.SCREEN_RECT.midbottom, prepare.SCREEN_SIZE, 80)
+        self.curtains = Curtains(prepare.SCREEN_RECT.midbottom,
+                                         prepare.SCREEN_SIZE, 80)
         self.hud = HUD(self.level)
 
     def startup(self, persistent):
         self.persist = persistent
         self.player = self.persist["player"]
         self.crosshair = self.persist["crosshair"]
-        print self.player.info["level"]
         if self.level is None or self.level.done:
             self.make_level()
             pg.mixer.music.load(prepare.MUSIC["RollUp"])
@@ -38,7 +38,10 @@ class Gameplay(tools._State):
             if event.key == pg.K_ESCAPE:
                 self.quit = True
             elif event.key == pg.K_r:
-                self.report()
+                self.done = True
+                self.level.done = True
+                pg.mixer.music.stop()
+                self.next = "LEVEL_START"
         self.level.get_event(event)
 
     def update(self, dt):
@@ -48,6 +51,7 @@ class Gameplay(tools._State):
         if self.level.done:
             self.done = True
             self.next = "COUNT_UP"
+            self.hud.reload_notification.active = False
             self.persist["level"] = self.level
             self.persist["curtains"] = self.curtains
             self.persist["hud"] = self.hud

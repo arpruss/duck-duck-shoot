@@ -12,10 +12,6 @@ class Crosshair(object):
     def update(self):
         self.pos = pg.mouse.get_pos()
         self.rect.center = self.pos
-        #clamped = self.rect.clamp(prepare.SCREEN_RECT)
-        #if clamped != self.rect:
-        #    self.rect = clamped
-        #    pg.mouse.set_pos(self.rect.center)
-        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)

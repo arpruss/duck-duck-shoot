@@ -170,9 +170,9 @@ class Blinker(Label):
             self.timer -= self.frequency
             self.visible = not self.visible
             text = self.original_text if self.visible else ""
-            self.set_text(text)       
-    
-    
+            self.set_text(text)
+
+
 class MultiLineLabel(pg.sprite.Sprite, tools._KwargMixin):
     """Create a single surface with multiple lines of text rendered on it."""
     def __init__(self, text, rect_attr, *groups, **kwargs):
@@ -195,7 +195,7 @@ class MultiLineLabel(pg.sprite.Sprite, tools._KwargMixin):
         self.process_kwargs("MultiLineLabel", MULTILINE_LABEL_DEFAULTS, kwargs)
         self.rect_attr = rect_attr
         self.make_image(text)
-        
+
     def make_image(self, text):
         attr = {"center": (0, 0)}
         lines = wrap_text(text, self.char_limit)

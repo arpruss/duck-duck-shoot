@@ -10,9 +10,9 @@ from ..components.target import YellowDuck, FastYellowDuck, BobbingBullseye, Col
 from ..components.gun import Gun
 
 
-STICK_HEIGHT = 120        
-        
-        
+STICK_HEIGHT = 120
+
+
 class GalleryLevel(object):
     def __init__(self, crosshair, player):
         self.player = player
@@ -25,10 +25,7 @@ class GalleryLevel(object):
                 "fast yellow duck": [FastYellowDuck, (self.ducks, self.all_sprites)],
                 "orange duck": [OrangeDuck, (self.ducks, self.all_sprites)],
                 "bobbing bullseye": [BobbingBullseye, (self.ducks, self.all_sprites)],
-                "colored bullseye": [ColoredBullseye, (self.ducks, self.all_sprites)]
-                }
-        
-        
+                "colored bullseye": [ColoredBullseye, (self.ducks, self.all_sprites)]}
         self.load_level_targets()
         self.rows = {}
         w = prepare.SCREEN_SIZE[0]
@@ -41,13 +38,13 @@ class GalleryLevel(object):
                 ["1", "grass3", (0, 350), w, 0, 0, 0,  [self.all_sprites]],
                 ["bench", "bg_wood", (0, 945), w, 0, 0, 0,  [self.all_sprites]],
                 ["sky2", "bg_blue", (0, 256), w, 0, 0, 0,  [self.sky]],
-                ["sky1", "bg_blue", (0, 512), w, 0, 0, 0, [self.sky]]
-                ]
-        for name, bg_image, bottomleft, width, scroll_speed, bob_amount, bob_speed, groups in row_info:
-            s = ScrollingBackground(prepare.GFX[bg_image], bottomleft, width, scroll_speed, bob_amount, bob_speed, *groups)
+                ["sky1", "bg_blue", (0, 512), w, 0, 0, 0, [self.sky]]]
+        for name, image, bl, width, scroll_speed, bob_amount, bob_speed, groups in row_info:
+            s = ScrollingBackground(prepare.GFX[image], bl, width, scroll_speed,
+                                             bob_amount, bob_speed, *groups)
             if self.all_sprites in groups:
                 self.rows[name] = GalleryRow(s, s.layer)
-            
+
         self.crosshair = crosshair
         self.gun = Gun(self.crosshair, self.player.info["max bullets"])
         self.total_time = 0
@@ -61,11 +58,11 @@ class GalleryLevel(object):
         with open(p, "r") as f:
             target_list = json.load(f)
         self.target_list = target_list
-        
-    def add_target(self, row_name, target_type):   
+
+    def add_target(self, row_name, target_type):
         row = self.rows[row_name]
         row.add_target(target_type, self.target_types, self)
-        
+
 
     def update(self, dt):
         self.total_time += dt
@@ -78,7 +75,7 @@ class GalleryLevel(object):
             if self.total_time >= timestamp:
                 self.add_target(row_name, target_type)
                 self.target_list.remove(t)
-        if not self.target_list and not [x for x in self.ducks if not x.done]:        
+        if not self.target_list and not [x for x in self.ducks if not x.done]:
             self.done = True
 
     def get_event(self, event):
@@ -86,7 +83,6 @@ class GalleryLevel(object):
         self.gun.get_event(event, self.ducks, rows, self.all_sprites)
 
     def draw(self, surface):
-        surface.fill(pg.Color("black"))
         self.sky.draw(surface)
         self.all_sprites.draw(surface)
 

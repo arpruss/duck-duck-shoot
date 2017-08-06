@@ -7,32 +7,35 @@ class Gun(object):
         self.fire_sound = prepare.SFX["fire"]
         self.click_sound = prepare.SFX["outofammo"]
         self.reload_sound = prepare.SFX["load"]
-        
+
         self.bullets = self.max_bullets = max_bullets
         self.crosshair = crosshair
-        self.kill_counter = {"duck": 0, "bullseye": 0, "colored bullseye": 0, "orange duck": 0}
-        
+        self.kill_counter = {"duck": 0, "bullseye": 0,
+                                   "colored bullseye": 0, "orange duck": 0}
+
     def get_event(self, event, targets, rows, all_sprites):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1:
+                self.crosshair.rect.center = event.pos
                 self.shoot(targets, rows, all_sprites)
-            
+
     def reload(self):
         if self.bullets < self.max_bullets:
             self.bullets = self.max_bullets
             self.reload_sound.play()
-        
+
     def shoot(self, targets, rows, all_sprites):
-        if self.crosshair.rect.left < 2 or self.crosshair.rect.right > prepare.SCREEN_SIZE[0] - 2:
+        cr = self.crosshair.rect
+        if cr.left < 64 or cr.right > prepare.SCREEN_SIZE[0] - 64:
             self.reload()
-        else:    
+        else:
             if self.bullets > 0:
                 self.fire_sound.play()
                 self.bullets -= 1
                 self.check_collisions(targets, rows, all_sprites)
             else:
                 self.click_sound.play()
-            
+
     def check_collisions(self, targets, rows, all_sprites):
         for row in rows:
             if row.bg.rect.collidepoint(self.crosshair.rect.center):
@@ -53,4 +56,3 @@ class Gun(object):
                             return
                     except IndexError:
                         pass
-                            

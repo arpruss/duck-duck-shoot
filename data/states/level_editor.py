@@ -40,17 +40,19 @@ class LevelEditor(tools._State):
         self.selected_row = self.rows[1]
         self.targets = pg.sprite.Group()
         self.timestamp = 0
-        self.time_label = Label("{}".format(self.timestamp), {"midtop": prepare.SCREEN_RECT.midtop})
+        self.time_label = Label("{}".format(self.timestamp),
+                                        {"midtop": prepare.SCREEN_RECT.midtop})
         self.num = 0
-        self.num_label = Label("{}".format(self.num), {"topright": prepare.SCREEN_RECT.topright})
-        
+        self.num_label = Label("{}".format(self.num),
+                                        {"topright": prepare.SCREEN_RECT.topright})
+
     def make_rows(self):
         self.rows = OrderedDict()
         left, top = (0, 150)
         for x in range(1, 7):
             self.rows[x] = Row((left, top), x)
             top += 80
-            
+
     def make_buttons(self):
         self.buttons = ButtonGroup()
         left, top = 50, 10
@@ -58,7 +60,8 @@ class LevelEditor(tools._State):
             t = TARGET_TYPES[name]((0,0), 1)
             img = t.target_image.subsurface(t.target_rect)
             size = img.get_size()
-            Button((left, top), self.buttons, idle_image=img, button_size=size, call=self.add_target, args=(TARGET_TYPES[name], name))
+            Button((left, top), self.buttons, idle_image=img, button_size=size,
+                      call=self.add_target, args=(TARGET_TYPES[name], name))
             left += 100
 
     def add_target(self, args):
@@ -72,24 +75,23 @@ class LevelEditor(tools._State):
         by_time = sorted(targets, key=lambda x: x[2])
         last = self.timestamp
         for layer, name, timestamp in by_time:
-            #self.timestamp = timestamp
             self.selected_row = self.rows[int(layer)]
             diff = timestamp - self.timestamp
             if diff:
                 self.scroll(diff)
-            self.add_target((TARGET_TYPES[name], name)) 
-            
-        
+            self.add_target((TARGET_TYPES[name], name))
+
+
     def save(self):
         target_list = [(str(t.layer), t.name, t.timestamp) for t in self.targets]
         with open("wip_level.json", "w") as f:
             json.dump(target_list, f)
-            
+
 
     def startup(self, persistent):
         self.persist = persistent
         pg.mouse.set_visible(True)
-        
+
     def get_event(self, event):
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:
@@ -121,7 +123,7 @@ class LevelEditor(tools._State):
                     if r.rect.collidepoint(event.pos):
                         self.selected_row = r
         self.buttons.get_event(event)
-        
+
 
     def scroll(self, amount):
         self.timestamp += amount
@@ -129,7 +131,7 @@ class LevelEditor(tools._State):
             t.scroll(amount)
             t.rect.center = t.get_anchor()
         self.time_label.set_text("{}".format(self.timestamp))
-        
+
     def update(self, dt):
         self.buttons.update(pg.mouse.get_pos())
         keys = pg.key.get_pressed()
@@ -137,7 +139,7 @@ class LevelEditor(tools._State):
             self.scroll(100)
         if keys[pg.K_LEFT]:
             self.scroll(-100)
-            
+
     def draw(self, surface):
         surface.fill(pg.Color("black"))
         surface.fill(pg.Color("gray5"), self.selected_row.rect)
@@ -148,5 +150,5 @@ class LevelEditor(tools._State):
         self.buttons.draw(surface)
         self.time_label.draw(surface)
         self.num_label.draw(surface)
-        
+
 

@@ -5,16 +5,6 @@ from ..components.animation import Animation, Task
 from ..components.hud import Icon, NumberLabel, MaskedButton
 
 
-
-
-
-
-
-
-
-
-
-
 class CountUp(tools._State):
     def __init__(self):
         super(CountUp, self).__init__()
@@ -27,30 +17,30 @@ class CountUp(tools._State):
         self.player = self.persist["player"]
         self.animations = pg.sprite.Group()
 
-
-        #TESTING
-        #self.level.gun.kill_counter["duck"] += 50
-
         self.hud.start_count_up()
         self.curtains.close()
         self.make_score_icon()
 
-        self.replay_button = MaskedButton(prepare.GFX["replay_button"], (460, 560), max(prepare.GFX["replay_button"].get_size()), self.replay)
-        self.play_button = MaskedButton(prepare.GFX["forward_button"], (820, 560), max(prepare.GFX["forward_button"].get_size()), self.next_level)
+        self.replay_button = MaskedButton(prepare.GFX["replay_button"],
+                                                        (460, 560), self.replay, [])
+        self.play_button = MaskedButton(prepare.GFX["forward_button"],
+                                                      (820, 560), self.next_level, [])
         self.replay_button.visible = False
         self.play_button.visible = False
 
-    def to_gameplay(self):
+    def to_level_start(self):
+        self.player.save()
         self.done = True
-        self.next = "GAMEPLAY"
+        self.next = "LEVEL_START"
 
     def replay(self):
-        ani = Task(self.to_gameplay, 250)
+        ani = Task(self.to_level_start, 250)
         self.animations.add(ani)
 
     def next_level(self):
         self.player.info["level"] += 1
-        self.replay()
+        task = Task(self.to_level_start, 250)
+        self.animations.add(task)
 
     def make_score_icon(self):
         cx = prepare.SCREEN_RECT.centerx
@@ -89,7 +79,8 @@ class CountUp(tools._State):
         self.play_button.update(dt, (self.level.crosshair.rect.center))
         if self.hud.replay_ready:
             self.replay_button.visible = True
-            self.play_button.visible = True
+            if self.hud.player_advance:
+                self.play_button.visible = True
 
     def draw(self, surface):
         self.level.draw(surface)

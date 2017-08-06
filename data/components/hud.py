@@ -26,9 +26,8 @@ class BulletBar(object):
         if rem:
             num_rows += 1
         total_h = num_rows * (h + vert_gap)
-        base_img = pg.Surface((total_w, total_h)) #.convert_alpha()
+        base_img = pg.Surface((total_w, total_h))
         base_img.set_colorkey(pg.Color("black"))
-        #base_img.fill((0,0,0,0))
         left = 0
         top = 0
         for x in range(self.max_bullets):
@@ -38,7 +37,7 @@ class BulletBar(object):
                 left = 0
                 top += h + vert_gap
         self.images[0] = base_img.copy()
-        
+
         left2 = 0
         top2 = 0
         for x in range(self.max_bullets):
@@ -64,9 +63,44 @@ class Icon(pg.sprite.Sprite):
 
     def update(self, dt):
         pass
-        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+
+
+class ShrinkingIcon(Icon):
+    def __init__(self, image, topleft, expanded, visible, *groups):
+        super(ShrinkingIcon, self).__init__(image, topleft, *groups)
+        self.original_rect = self.rect.copy()
+        self.base_image = self.image.copy()
+        self.shrink_w, self.shrink_h = self.rect.size if expanded else (0, 0)
+        self.visible = visible
+
+    def shrink(self, duration, delay, animations):
+        ani = Animation(shrink_w=2, shrink_h=2, duration=duration, delay=delay)
+        ani.start(self)
+        animations.add(ani)
+
+    def expand(self, duration, delay, animations):
+        w, h = self.original_rect.size
+        ani = Animation(shrink_w=w, shrink_h=h, duration=duration,
+                               delay=delay, transition="out_bounce")
+        ani.start(self)
+        animations.add(ani)
+
+    def update(self):
+        if self.rect.size != (self.shrink_w, self.shrink_h):
+            center = self.rect.center
+            self.rect.size = self.shrink_w, self.shrink_h
+            self.rect.center = center
+            self.image = pg.transform.scale(self.base_image, self.rect.size)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+
+    def draw(self, surface):
+        if self.visible:
+            surface.blit(self.image, self.rect)
 
 
 class BlinkingIcon(Icon):
@@ -79,7 +113,7 @@ class BlinkingIcon(Icon):
         self.timer = 0
         self.visible = True
         self.active = False
-        
+
     def update(self, dt):
         self.timer += dt
         if self.timer >= self.frequency:
@@ -89,23 +123,23 @@ class BlinkingIcon(Icon):
             self.image = self.base
         else:
             self.image = self.blank
-        
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
 
-        
+
 class MaskedButton(pg.sprite.Sprite):
     inflate_time = 120
     deflate_time = 120
-    
-    def __init__(self, image, centerpoint, size, callback, *groups):
+
+    def __init__(self, image, centerpoint, callback, args, *groups):
         super(MaskedButton, self).__init__(*groups)
+        size = max(image.get_size())
         self.base_image = pg.Surface((size, size)).convert_alpha()
         self.base_rect = self.base_image.get_rect(center=centerpoint)
-        img = image
-        img_rect = img.get_rect(center=(size//2, size//2))
+        img_rect = image.get_rect(center=(size//2, size//2))
         self.base_image.fill((0,0,0,0))
-        self.base_image.blit(img, img_rect)
+        self.base_image.blit(image, img_rect)
         self.size = self.initial_size = size
         self.make_images()
         self.hovered = False
@@ -114,8 +148,10 @@ class MaskedButton(pg.sprite.Sprite):
         self.units_per_click = 1
         self.clicked = False
         self.call = callback
+        self.args = args
         self.visible = True
-        
+        self.active = True
+
     def mask_point_collide(self, pos):
         dx = pos[0] - self.rect.left
         dy = pos[1] - self.rect.top
@@ -123,7 +159,7 @@ class MaskedButton(pg.sprite.Sprite):
             return self.mask.get_at((dx, dy))
         except IndexError:
             return False
-            
+
     def make_images(self):
         self.images, self.rects, self.masks = {}, {}, {}
         self.low = int(self.size * .95)
@@ -171,21 +207,24 @@ class MaskedButton(pg.sprite.Sprite):
             self.held = False
             self.inflate(self.initial_size)
         if self.clicked:
-            self.call()
+            if self.args:
+                self.call(*self.args)
+            else:
+                self.call()
         self.clicked = False
-        
+
     def inflate(self, target):
         self.animations.empty()
         dur = self.inflate_time
         ani = Animation(size=target, duration=dur, transition="out_elastic")
         ani.start(self)
         self.animations.add(ani)
-        
+
     def draw(self, surface):
         if self.visible:
             surface.blit(self.image, self.rect)
 
-        
+
 class ReloadNotification(pg.sprite.Sprite):
     def __init__(self, *groups):
         super(ReloadNotification, self).__init__(*groups)
@@ -199,17 +238,17 @@ class ReloadNotification(pg.sprite.Sprite):
         right = Icon(prepare.GFX["reload"], (1200, 256), self.icons)
         BlinkingIcon(pg.transform.flip(img, True, False),
                          (right.rect.right + space, right.rect.top + vert_offset), 500, self.icons)
-        
+
     def update(self, dt, bullets):
         self.icons.update(dt)
         self.active = not bullets
         for icon in self.icons:
             icon.active = self.active
-        
+
     def draw(self, surface):
         if self.active:
             self.icons.draw(surface)
-        
+
 
 class Counter(pg.sprite.Sprite):
     def __init__(self, icon_img, topleft, value, *groups):
@@ -257,8 +296,8 @@ class NumberLabel(pg.sprite.Sprite):
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)
-        
-        
+
+
 class StarStrip(pg.sprite.Sprite):
     bg_color = (222, 102, 23)
     def __init__(self, center, *groups):
@@ -268,19 +307,20 @@ class StarStrip(pg.sprite.Sprite):
         self.empty_img = prepare.GFX["star_empty"].copy()
         self.empty_img.blit(prepare.GFX["star_outline_empty"], (0, 0))
         self.gap = 16
-        
+
         self.make_base_image()
         self.make_image(0)
         self.rect = self.image.get_rect(center=center)
         self.active = False
         self.alpha = 0
+        self.shrinking = False
+        self.shrink_w, self.shrink_h = self.rect.size
 
     def make_base_image(self):
         w, h =  self.star_img.get_size()
         total_w = (w * 5) + (self.gap * 4)
-        strip = pg.Surface((total_w, h))
-        strip.fill(self.bg_color)
-        strip.set_colorkey(self.bg_color)
+        strip = pg.Surface((total_w, h)).convert_alpha()
+        strip.fill((0,0,0,0))
         for x in range(5):
             strip.blit(self.empty_img, (x * (w + self.gap), 0))
         self.base_image = strip
@@ -289,10 +329,26 @@ class StarStrip(pg.sprite.Sprite):
         self.image = self.base_image.copy()
         for x in range(num_stars):
             self.image.blit(self.star_img, (x * (self.star_img.get_width() + self.gap), 0))
-    
+
+    def shrink_out(self, duration, delay, animations):
+        ani = Animation(shrink_w=2, shrink_h=2, duration=duration, delay=delay, round_values=True)
+        ani.start(self)
+        ani.callback = self.kill
+        task = Task(self.shrink, delay)
+        animations.add(ani, task)
+
+    def shrink(self):
+        self.shrink_image = self.image.copy()
+        self.shrinking = True
+
     def update(self):
+        if self.shrinking:
+            center = self.rect.center
+            self.rect.size = self.shrink_w, self.shrink_h
+            self.rect.center = center
+            self.image = pg.transform.scale(self.shrink_image, self.rect.size)
         self.image.set_alpha(self.alpha)
-        
+
     def draw(self, surface):
         if self.active:
             surface.blit(self.image, self.rect)
@@ -300,23 +356,36 @@ class StarStrip(pg.sprite.Sprite):
 
 class HUD(object):
     def __init__(self, level):
+        sr = prepare.SCREEN_RECT
         self.level = level
         self.animations = pg.sprite.Group()
-        self.bullet_bar = BulletBar(prepare.SCREEN_RECT.topright, level.gun.max_bullets)
+        self.bullet_bar = BulletBar(sr.topright, level.gun.max_bullets)
         self.counters = pg.sprite.Group()
-        self.duck_counter = Counter(prepare.GFX["duck_counter"], (0, -5), 0, self.counters)
-        self.bullseye_counter = Counter(prepare.GFX["bullseye_counter"], (0, 64), 0, self.counters)
-        self.colored_bull_counter = Counter(prepare.GFX["colored_bull_counter"], (0, 143), 0, self.counters)
-        self.orange_duck_counter = Counter(prepare.GFX["orange_duck_counter"], (0, 212), 0, self.counters)
-        self.star_strip = StarStrip((prepare.SCREEN_RECT.centerx, 320))
+        self.duck_counter = Counter(prepare.GFX["duck_counter"],
+                                               (0, -5), 0, self.counters)
+        self.bullseye_counter = Counter(prepare.GFX["bullseye_counter"],
+                                                    (0, 64), 0, self.counters)
+        self.colored_bull_counter = Counter(prepare.GFX["colored_bull_counter"],
+                                                         (0, 143), 0, self.counters)
+        self.orange_duck_counter = Counter(prepare.GFX["orange_duck_counter"],
+                                                          (0, 212), 0, self.counters)
+        self.star_strip = StarStrip((sr.centerx, 320))
         self.reload_notification = ReloadNotification()
+        b_img = prepare.GFX["bullet_bonus"]
+        w, h = b_img.get_size()
+        x = self.star_strip.rect.centerx - (w // 2)
+        y = self.star_strip.rect.centery - (h // 2)
+        self.bullet_bonus_icon = ShrinkingIcon(b_img, (x, y), False, False)
         self.replay_ready = False
+        self.player_advance = False
         self.score = 0
 
     def start_count_up(self):
+        self.level.gun.bullets = self.level.gun.max_bullets
         delay = 3000
         send_time = 600
-        counters = (self.duck_counter, self.bullseye_counter, self.colored_bull_counter, self.orange_duck_counter)
+        counters = (self.duck_counter, self.bullseye_counter,
+                        self.colored_bull_counter, self.orange_duck_counter)
         target_types = ("duck", "bullseye", "colored bullseye", "orange duck")
         for counter, target_type in zip(counters, target_types):
             t = Task(self.send_counter, args=(counter, send_time, delay))
@@ -337,15 +406,17 @@ class HUD(object):
         w = counter.get_width()
         new_left = prepare.SCREEN_RECT.centerx - (w//2)
         new_top = prepare.SCREEN_RECT.centery - 64
-        ani = Animation(left=new_left, top=new_top, duration=duration, delay=delay, round_values=True) #, transition="out_quart")
+        ani = Animation(left=new_left, top=new_top, duration=duration,
+                               delay=delay, round_values=True)
         ani.start(counter.icon.rect)
         self.animations.add(ani)
-        
+
     def count_targets(self, target_type, delay, count_delay=150):
-        num = self.level.gun.kill_counter[target_type]        
-        t = Task(self.count_target, delay + count_delay, num, args=(target_type,))
+        num = self.level.gun.kill_counter[target_type]
+        t = Task(self.count_target, delay + count_delay,
+                    num, args=(target_type,))
         self.animations.add(t)
-    
+
     def count_target(self, target_type):
         if self.level.gun.kill_counter[target_type] > 0:
             self.level.gun.kill_counter[target_type] -= 1
@@ -354,16 +425,23 @@ class HUD(object):
 
     def kill_counter(self, counter):
         counter.done = True
-        
+
     def calc_stars(self):
         percent = self.score / float(self.level.max_score)
         num_stars = percent / .2
-        return  percent, num_stars
+        return  percent, int(num_stars)
 
     def replay(self):
         self.replay_ready = True
-        
+
     def fill_stars(self):
+        level = self.level.player.info["level"]
+        try:
+            high = self.level.player.info["scores"][level]
+            if high < self.score:
+                self.level.player.info["scores"][level] = self.score
+        except KeyError:
+            self.level.player.info["scores"][level] = self.score
         delay = 500
         freq = 750
         ani = Animation(alpha=255, duration=250)
@@ -371,17 +449,16 @@ class HUD(object):
         self.animations.add(ani)
         score, num_stars = self.calc_stars()
         if score > 1:
-            print "MARKSMANSHIP"
             score = 1
         if num_stars > 5:
             num_stars = 5
-        for x in range(1, int(num_stars) + 1):
+        for x in range(1, num_stars + 1):
             t = Task(self.star_strip.make_image, delay, args=(x,))
             t2 = Task(prepare.SFX["bb-hit2"].play, delay)
             delay += freq - (100 * x)
             self.animations.add(t, t2)
         replay = Task(self.replay, delay + 500)
-        level = self.level.player.info["level"]
+
         if level in self.level.player.info["stars"]:
             if self.level.player.info["stars"][level] < num_stars:
                 self.level.player.info["stars"][level] = num_stars
@@ -391,20 +468,31 @@ class HUD(object):
             self.level.player.info["stars"][level] = num_stars
             if num_stars == 5:
                 self.pre_add_bullet(delay)
-        self.animations.add(replay)        
+        if self.level.player.info["stars"][level] > 3:
+            self.player_advance = True
+            self.level.player.info["scores"][level + 1] = 0
+            self.level.player.info["stars"][level + 1] = 0
+        self.animations.add(replay)
 
     def pre_add_bullet(self, delay):
-        ani = Animation(alpha=0, duration=5000, delay=delay)
-        ani.start(self.star_strip)
-        ani.callback = self.add_bullet
-        self.animations.add(ani)
-        
+        shrink_duration = 500
+        self.star_strip.shrink_out(shrink_duration, delay, self.animations)
+        delay += shrink_duration
+        expand_duration = 750
+        t = Task(self.bullet_bonus_icon.expand, delay,
+                    args=(expand_duration, 0, self.animations))
+        t2 = Task(self.bullet_bonus_icon.toggle_visible, delay - 100)
+        t3 = Task(self.add_bullet, delay + expand_duration - 500)
+        self.animations.add(t, t2, t3)
+
     def add_bullet(self):
+        prepare.SFX["load"].play()
         self.level.player.info["max bullets"] += 1
         self.level.gun.max_bullets += 1
         self.level.gun.bullets = self.level.gun.max_bullets
-        self.bullet_bar = BulletBar(prepare.SCREEN_RECT.topright, self.level.gun.max_bullets)      
-        
+        self.bullet_bar = BulletBar(prepare.SCREEN_RECT.topright,
+                                             self.level.gun.max_bullets)
+
     def update(self, dt, gun):
         self.animations.update(dt)
         self.bullet_bar.update(gun)
@@ -415,11 +503,12 @@ class HUD(object):
         self.orange_duck_counter.update(kills["orange duck"])
         self.star_strip.update()
         self.reload_notification.update(dt, gun.bullets)
+        self.bullet_bonus_icon.update()
         if not self.star_strip.active:
             if all((counter.done for counter in self.counters)):
                 self.star_strip.active = True
                 self.fill_stars()
-        
+
     def draw(self, surface):
         self.bullet_bar.draw(surface)
         self.duck_counter.draw(surface)
@@ -428,4 +517,5 @@ class HUD(object):
         self.orange_duck_counter.draw(surface)
         self.reload_notification.draw(surface)
         self.star_strip.draw(surface)
+        self.bullet_bonus_icon.draw(surface)
 
