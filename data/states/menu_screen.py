@@ -68,9 +68,6 @@ class MenuScreen(tools._State):
         if event.type == pg.KEYUP:
             if event.key == pg.K_ESCAPE:
                 self.quit = True
-            else:
-                self.done = True
-                self.next = "GAMEPLAY"
         self.buttons.get_event(event)
 
     def update(self, dt):
