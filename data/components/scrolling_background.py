@@ -35,7 +35,10 @@ class ScrollingBackground(pg.sprite.DirtySprite):
         self.scroll_offset -= int(self.scroll_offset)
         if self.view_rect.right < self.base_rect.right - self.scroll_width:
             self.view_rect.right += self.scroll_width
-        self.image = self.base_image.subsurface(self.view_rect)
+        try:
+            self.image = self.base_image.subsurface(self.view_rect)
+        except:
+            pass
 
         self.bob_offset += self.bob_speed * dt
         while int(self.bob_offset):

@@ -44,7 +44,8 @@ class TitleScreen(tools._State):
         self.make_icons()
         self.title_pieces = ["Duck, ", "Duck, ", "Shoot"][::-1]
         self.caption = ""
-        pg.mouse.set_visible(False)
+        pg.mouse.set_visible(True)
+        pg.mouse.set_cursor((8,8),(0,0),(0,)*8,(0,)*8)
         pg.event.set_grab(True)
         self.elapsed = 0
         task = Task(self.fade_in_title, 4000)

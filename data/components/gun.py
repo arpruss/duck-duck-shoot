@@ -18,6 +18,8 @@ class Gun(object):
             if event.button == 1:
                 self.crosshair.rect.center = event.pos
                 self.shoot(targets, rows, all_sprites)
+            else:
+                self.reload()
 
     def reload(self):
         if self.bullets < self.max_bullets:

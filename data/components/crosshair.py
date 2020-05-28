@@ -8,10 +8,15 @@ class Crosshair(object):
         self.pos = pg.mouse.get_pos()
         self.image = image
         self.rect = self.image.get_rect(center=self.pos)
+        self.visible = True
 
     def update(self):
         self.pos = pg.mouse.get_pos()
         self.rect.center = self.pos
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        if self.visible:
+            surface.blit(self.image, self.rect)
+
+    def setVisible(self, visible):
+        self.visible = visible

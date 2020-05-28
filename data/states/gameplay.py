@@ -22,6 +22,7 @@ class Gameplay(tools._State):
         self.persist = persistent
         self.player = self.persist["player"]
         self.crosshair = self.persist["crosshair"]
+        self.crosshair.setVisible(False)
         if self.level is None or self.level.done:
             self.make_level()
             pg.mixer.music.load(prepare.MUSIC["RollUp"])
