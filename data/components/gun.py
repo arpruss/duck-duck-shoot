@@ -20,6 +20,9 @@ class Gun(object):
                 self.shoot(targets, rows, all_sprites)
             else:
                 self.reload()
+        elif event.type == pg.MOUSEMOTION:
+            if event.pos[0] < 16 or event.pos[0] > prepare.SCREEN_SIZE[0] - 16 or event.pos[1] < 16 or event.pos[1] > prepare.SCREEN_SIZE[1] - 16:
+                self.reload()
 
     def reload(self):
         if self.bullets < self.max_bullets:
@@ -28,7 +31,7 @@ class Gun(object):
 
     def shoot(self, targets, rows, all_sprites):
         cr = self.crosshair.rect
-        if cr.left < 64 or cr.right > prepare.SCREEN_SIZE[0] - 64 or cr.top < 16 or cr.bottom > prepare.SCREEN_SIZE[0] - 16:
+        if cr.left < 64 or cr.right > prepare.SCREEN_SIZE[0] - 64 or cr.top < 16 or cr.bottom > prepare.SCREEN_SIZE[1] - 16:
             self.reload()
         else:
             if self.bullets > 0:
