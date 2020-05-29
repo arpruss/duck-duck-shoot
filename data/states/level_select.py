@@ -57,6 +57,7 @@ class LevelSelectScreen(tools._State):
         self.persist = persistent
         self.player = self.persist["player"]
         self.crosshair = self.persist["crosshair"]
+        self.crosshair.setVisibility(True)
         self.animations = pg.sprite.Group()
         self.icons = pg.sprite.Group()
         self.make_level_buttons()

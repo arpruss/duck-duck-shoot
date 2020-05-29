@@ -52,6 +52,7 @@ class TitleScreen(tools._State):
         task2 = Task(self.fade_out_icons, 3500)
         self.animations.add(task, task2)
         self.crosshair = Crosshair(prepare.GFX["crosshair_white_large"])
+        self.crosshair.setVisibility(True)
         self.persist["crosshair"] = self.crosshair
         self.load_player()
         self.persist["player"] = self.player

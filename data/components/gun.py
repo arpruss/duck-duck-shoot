@@ -28,7 +28,7 @@ class Gun(object):
 
     def shoot(self, targets, rows, all_sprites):
         cr = self.crosshair.rect
-        if cr.left < 64 or cr.right > prepare.SCREEN_SIZE[0] - 64:
+        if cr.left < 64 or cr.right > prepare.SCREEN_SIZE[0] - 64 or cr.top < 16 or cr.bottom > prepare.SCREEN_SIZE[0] - 16:
             self.reload()
         else:
             if self.bullets > 0:

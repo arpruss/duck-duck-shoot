@@ -24,6 +24,7 @@ class LevelStart(tools._State):
         self.persist = persistent
         self.player = self.persist["player"]
         self.crosshair = self.persist["crosshair"]
+        self.crosshair.setVisibility(True)
         level_num = self.player.info["level"]
         self.animations = pg.sprite.Group()
         title = prepare.GFX["text_level"]

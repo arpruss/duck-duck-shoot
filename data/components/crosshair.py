@@ -18,5 +18,5 @@ class Crosshair(object):
         if self.visible:
             surface.blit(self.image, self.rect)
 
-    def setVisible(self, visible):
+    def setVisibility(self, visible):
         self.visible = visible

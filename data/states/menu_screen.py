@@ -63,6 +63,7 @@ class MenuScreen(tools._State):
     def startup(self, persistent):
         self.persist = persistent
         self.crosshair = self.persist["crosshair"]
+        self.crosshair.setVisibility(True)
 
     def get_event(self, event):
         if event.type == pg.KEYUP:
